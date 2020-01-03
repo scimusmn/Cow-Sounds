@@ -20,25 +20,26 @@
 #define lung_led_pin 9
 #define gut_led_pin 13
 
+unsigned long currentMillis;
+unsigned long lastActivityMillis;
+long millisToSwitchAudio = 300000;  // 300000 = 5 min. Audio tracks won't switch unless no activity is detected for this many millis
 
 Button heart_btn;
 Button lung_btn;
 Button gut_btn;
 Button moo_btn;
 
-
 DFPlayerMini_Fast HeartPlayer;  // create audio player "DFplayer1"
 DFPlayerMini_Fast LungPlayer;  // create audio player "DFplayer2"
 DFPlayerMini_Fast GutPlayer;  // create audio player "DFplayer3"
 DFPlayerMini_Fast HealthyPlayer;  // create audio player "DFplayer4"
+
 SoftwareSerial HeartSerial(groundedPin, softSerialTX1); // open software serial
 SoftwareSerial LungSerial(groundedPin, softSerialTX2); // open software serial
 SoftwareSerial GutSerial(groundedPin, softSerialTX3); // open software serial
 SoftwareSerial HealthySerial(groundedPin, softSerialTX4); // open software serial
 
 void setup() {
-
-  Serial.begin(9600);
   HeartSerial.begin(9600);
   LungSerial.begin(9600);
   GutSerial.begin(9600);
@@ -63,6 +64,7 @@ void setup() {
   heart_btn.setup(heart_btn_pin, [](int state) {
     if (state == 1) {
       HealthyPlayer.play(1);
+      lastActivityMillis = millis();
       delay(50);
     }
   });
@@ -70,6 +72,7 @@ void setup() {
   lung_btn.setup(lung_btn_pin, [](int state) {
     if (state == 1) {
       HealthyPlayer.play(2);
+      lastActivityMillis = millis();
       delay(50);
     }
   });
@@ -77,6 +80,7 @@ void setup() {
   gut_btn.setup(gut_btn_pin, [](int state) {
     if (state == 1) {
       HealthyPlayer.play(3);
+      lastActivityMillis = millis();
       delay(50);
     }
   });
@@ -84,20 +88,41 @@ void setup() {
   moo_btn.setup(moo_btn_pin, [](int state) {
     if (state == 1) {
       HealthyPlayer.play(4);
+      lastActivityMillis = millis();
       delay(50);
     }
   });
 
-
-//  DFplayer1.loop(1);
-//  delay(80);
-//  DFplayer2.loop(1);
-//  delay(80);
-//  DFplayer3.loop(1);
-//  delay(80);
+    HeartPlayer.loop(1);
+    delay(50);
+    LungPlayer.loop(1);
+    delay(50);
+    GutPlayer.loop(1);
+    delay(50);
 }
 
 void loop() {
+
+  
+  if ((millis()-lastActivityMillis) > millisToSwitchAudio){
+  //no activity for a while, skip each player ahead random num of tracks.  
+    for (int i = 0; i < random(3); i++) {
+      HeartPlayer.playNext();
+      delay(50);
+    }
+
+    for (int i = 0; i < random(3); i++) {
+      LungPlayer.playNext();
+      delay(50);
+    }
+
+    for (int i = 0; i < random(3); i++) {
+      GutPlayer.playNext();
+      delay(50);
+    }
+    lastActivityMillis = millis();
+  }
+  
   heart_btn.idle();
   lung_btn.idle();
   gut_btn.idle();

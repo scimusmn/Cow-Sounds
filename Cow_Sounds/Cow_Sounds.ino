@@ -5,11 +5,11 @@
 #include <SoftwareSerial.h>
 #include "Button.h"
 
-#define groundedPin 3
-#define softSerialTX1 10 
-#define softSerialTX2 11 
-#define softSerialTX3 12 
-#define softSerialTX4 13
+#define fakeRx A2
+#define softSerialTX1 1 
+#define softSerialTX2 2
+#define softSerialTX3 6 
+#define softSerialTX4 10
 
 #define heart_btn_pin 4
 #define lung_btn_pin 8
@@ -29,99 +29,103 @@ Button lung_btn;
 Button gut_btn;
 Button moo_btn;
 
-DFPlayerMini_Fast HeartPlayer;  // create audio player "DFplayer1"
-DFPlayerMini_Fast LungPlayer;  // create audio player "DFplayer2"
-DFPlayerMini_Fast GutPlayer;  // create audio player "DFplayer3"
-DFPlayerMini_Fast HealthyPlayer;  // create audio player "DFplayer4"
+DFPlayerMini_Fast HeartPlayer; 
+DFPlayerMini_Fast LungPlayer;  
+DFPlayerMini_Fast GutPlayer; 
+DFPlayerMini_Fast HealthyPlayer; 
 
-SoftwareSerial HeartSerial(groundedPin, softSerialTX1); // open software serial
-SoftwareSerial LungSerial(groundedPin, softSerialTX2); // open software serial
-SoftwareSerial GutSerial(groundedPin, softSerialTX3); // open software serial
-SoftwareSerial HealthySerial(groundedPin, softSerialTX4); // open software serial
+SoftwareSerial HeartSerial(fakeRx, softSerialTX1); // open software serial
+SoftwareSerial LungSerial(fakeRx, softSerialTX2); // open software serial
+SoftwareSerial GutSerial(fakeRx, softSerialTX3); // open software serial
+SoftwareSerial HealthySerial(fakeRx, softSerialTX4); // open software serial
 
 void setup() {
+  pinMode(fakeRx, INPUT);
+  
   HeartSerial.begin(9600);
   LungSerial.begin(9600);
   GutSerial.begin(9600);
   HealthySerial.begin(9600);
 
+  delay(100);
+
   HeartPlayer.begin(HeartSerial);
   LungPlayer.begin(LungSerial);
   GutPlayer.begin(GutSerial);
   HealthyPlayer.begin(HealthySerial);
+
+  delay(100);
   
   HeartPlayer.volume(30); // max volume is 30
-  delay(80);
+  delay(100);
   LungPlayer.volume(30); // max volume is 30
-  delay(80);
+  delay(100);
   GutPlayer.volume(30); // max volume is 30
-  delay(80);
+  delay(100);
   HealthyPlayer.volume(30); // max volume is 30
-  delay(80);
+  delay(100);
     
-  Serial.println("Cow Sounds");
-
   heart_btn.setup(heart_btn_pin, [](int state) {
-    if (state == 1) {
+    if (state == 1) {      
       HealthyPlayer.play(1);
+      delay(40);
       lastActivityMillis = millis();
-      delay(50);
     }
   });
 
   lung_btn.setup(lung_btn_pin, [](int state) {
     if (state == 1) {
       HealthyPlayer.play(2);
+      delay(40);
       lastActivityMillis = millis();
-      delay(50);
     }
   });
 
   gut_btn.setup(gut_btn_pin, [](int state) {
     if (state == 1) {
       HealthyPlayer.play(3);
+      delay(40);
       lastActivityMillis = millis();
-      delay(50);
     }
   });
 
   moo_btn.setup(moo_btn_pin, [](int state) {
     if (state == 1) {
       HealthyPlayer.play(4);
+      delay(100);
       lastActivityMillis = millis();
-      delay(50);
     }
   });
 
     HeartPlayer.loop(1);
-    delay(50);
+    delay(100);
     LungPlayer.loop(1);
-    delay(50);
+    delay(100);
     GutPlayer.loop(1);
-    delay(50);
+    delay(100);
 }
 
 void loop() {
 
   
-  if ((millis()-lastActivityMillis) > millisToSwitchAudio){
-  //no activity for a while, skip each player ahead random num of tracks.  
-    for (int i = 0; i < random(3); i++) {
-      HeartPlayer.playNext();
-      delay(50);
-    }
-
-    for (int i = 0; i < random(3); i++) {
-      LungPlayer.playNext();
-      delay(50);
-    }
-
-    for (int i = 0; i < random(3); i++) {
-      GutPlayer.playNext();
-      delay(50);
-    }
-    lastActivityMillis = millis();
-  }
+//  if ((millis()-lastActivityMillis) > millisToSwitchAudio){
+//  //no activity for a while, skip each player ahead random num of tracks.  
+//    for (int i = 0; i < random(3); i++) {
+//      HeartPlayer.playNext();
+//      delay(100);
+//    }
+//
+//    for (int i = 0; i < random(3); i++) {
+//      LungPlayer.playNext();
+//      delay(100);
+//    }
+//
+//    for (int i = 0; i < random(3); i++) {
+//      GutPlayer.playNext();
+//      delay(100);
+//    }
+//    lastActivityMillis = millis();
+//  }
   
   heart_btn.idle();
   lung_btn.idle();

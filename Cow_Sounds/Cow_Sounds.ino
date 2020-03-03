@@ -5,24 +5,25 @@
 #include <SoftwareSerial.h>
 #include "Button.h"
 
-#define fakeRx 3
-#define softSerialTX1 1 
+#define fakeRx 7
+#define softSerialTX1 1
 #define softSerialTX2 2
-#define softSerialTX3 6 
+#define softSerialTX3 6
 #define softSerialTX4 10
+#define audioPin A5
 
-#define moo_btn_pin 0
+//#define moo_btn_pin 0
 
 unsigned long currentMillis;
 unsigned long lastActivityMillis;
-long millisToSwitchAudio = 30000;  // 300000 = 5 min. Audio tracks won't switch unless no activity is detected for this many millis
+long millisToSwitchAudio = 300000;  // 300000 = 5 min. Audio tracks won't switch unless no activity is detected for this many millis
 
 Button moo_btn;
 
-DFPlayerMini_Fast HeartPlayer; 
-DFPlayerMini_Fast LungPlayer;  
-DFPlayerMini_Fast GutPlayer; 
-DFPlayerMini_Fast MooPlayer; 
+DFPlayerMini_Fast HeartPlayer;
+DFPlayerMini_Fast LungPlayer;
+DFPlayerMini_Fast GutPlayer;
+DFPlayerMini_Fast MooPlayer;
 
 SoftwareSerial HeartSerial(fakeRx, softSerialTX1); // open software serial
 SoftwareSerial LungSerial(fakeRx, softSerialTX2); // open software serial
@@ -31,7 +32,8 @@ SoftwareSerial MooSerial(fakeRx, softSerialTX4); // open software serial
 
 void setup() {
   pinMode(fakeRx, INPUT);
-  
+  pinMode(audioPin, INPUT);
+
   HeartSerial.begin(9600);
   LungSerial.begin(9600);
   GutSerial.begin(9600);
@@ -48,7 +50,7 @@ void setup() {
   MooPlayer.begin(MooSerial);
 
   delay(80);
-  
+
   HeartPlayer.volume(30); // max volume is 30
   delay(80);
   LungPlayer.volume(30); // max volume is 30
@@ -58,13 +60,13 @@ void setup() {
   MooPlayer.volume(30); // max volume is 30
   delay(80);
 
-  moo_btn.setup(moo_btn_pin, [](int state) {
-    if (state == 1) {      
-      MooPlayer.play(1);
-      delay(80);
-    }
-  });
-  
+  //  moo_btn.setup(moo_btn_pin, [](int state) {
+  //    if (state == 1) {
+  //      MooPlayer.play(1);
+  //      delay(80);
+  //    }
+  //  });
+
   HeartPlayer.loop(1);
   delay(80);
   LungPlayer.loop(1);
@@ -74,27 +76,24 @@ void setup() {
 }
 
 void loop() {
-  
-  if ((millis()-lastActivityMillis) > millisToSwitchAudio){
-    MooPlayer.play(1);
-    LungPlayer.playNext();
-    GutPlayer.playNext();
-    HeartPlayer.playNext();
+
+  //  moo_btn.idle();
+
+  int sound = analogRead(audioPin);
+  if (sound > 600) {    // audio signal is biased at 512 (2.5V)
     lastActivityMillis = millis();
   }
-//
-//    for (int i = 0; i < random(3); i++) {
-//      LungPlayer.playNext();
-//      delay(80);
-//    }
-//
-//    for (int i = 0; i < random(3); i++) {
-//      GutPlayer.playNext();
-//      delay(80);
-//    }
-//    lastActivityMillis = millis();
-//  }
-  
-  moo_btn.idle();
- 
+
+  if ((millis() - lastActivityMillis) > millisToSwitchAudio) {
+    MooPlayer.play(1);
+    delay(80);
+
+    LungPlayer.play(random(3) + 1);
+    delay(80);
+    GutPlayer.play(random(3) + 1);
+    delay(80);
+    HeartPlayer.play(random(3) + 1);
+
+    lastActivityMillis = millis();
+  }
 }

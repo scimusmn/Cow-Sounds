@@ -99,19 +99,20 @@ void loop()
   }
 }
 
-void changeAudio(){
+void changeAudio()
+{
   MooPlayer.play(1);
-    delay(80);
-    i++;
-    if (i == 4)
-      i = 1;
-    Serial.print("track: ");
-    Serial.println(i);
-    LungPlayer.loop(i); // random(3) + 1);
-    delay(80);
-    GutPlayer.loop(i); //random(3) + 1);
-    delay(80);
-    HeartPlayer.loop(i); //random(3) + 1);
+  delay(80);
+  i++;
+  if (i == 4)
+    i = 1;
+  Serial.print("track: ");
+  Serial.println(i);
+  LungPlayer.loop(i); // random(3) + 1);
+  delay(80);
+  GutPlayer.loop(i); //random(3) + 1);
+  delay(80);
+  HeartPlayer.loop(i); //random(3) + 1);
 
-    lastActivityMillis = millis();
+  lastActivityMillis = millis();
 }

@@ -69,8 +69,6 @@ void setup()
     {
       Serial.println("Moo");
       changeAudio();
-      MooPlayer.play(1);
-      delay(80);
     }
   });
 
@@ -93,10 +91,10 @@ void loop()
     // lastActivityMillis = millis();
   }
 
-  if ((millis() - lastActivityMillis) > millisToSwitchAudio)
-  {
-    changeAudio();
-  }
+  // if ((millis() - lastActivityMillis) > millisToSwitchAudio)
+  // {
+  //   changeAudio();
+  // }
 }
 
 void changeAudio()
@@ -104,7 +102,7 @@ void changeAudio()
   MooPlayer.play(1);
   delay(80);
   i++;
-  if (i == 4)
+  if (i == 6)
     i = 1;
   Serial.print("track: ");
   Serial.println(i);
